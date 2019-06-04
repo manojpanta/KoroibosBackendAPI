@@ -1,43 +1,62 @@
 var fs = require('fs');
 var csv =  require('fast-csv');
-const pg = require('pg')
-var config = {
-  user: "manojpanta",
-  database: "koroibos_development",
-  password: null,
-  port: 5432,
-  host: "localhost"
-}
-const pool = new pg.Pool(config);
+const Olympian = require('./models').Olympian
+const Sport = require('./models').Sport
+const Event = require('./models').Event
+const Medalist = require('./models').Medalist
 
-pool.connect(function(err) {
-  if (err) {
-    console.log(err);
-  }
-});
-
-let counter = 1;
+let counter = 0;
 let csvStream = csv.fromPath("./public/files/olympions.csv", {headers: true})
 .on('data', (record)=>  {
   csvStream.pause();
   let id = counter;
   let name = record.Name;
-  let team = record.Team;
+  let sex = record.Sex;
   let age = record.Age;
+  let height = record.Height;
+  let weight = record.Weight;
+  let team = record.Team;
+  let games = record.Games;
   let sport = record.Sport;
+  let event_name = record.Event;
+  let medal = record.Medal;
   let createdAt = new Date();
   let updatedAt =  new Date();
-  pool.query("INSERT INTO Olympians (id,name,team,age,sport,createdAt,updatedAt) \ VALUES($1,$2,$3,$4,$5,$6,$7)", [id,name,team,age,sport,createdAt,updatedAt], function(err) {
-    if (err) {
-      console.log(err);
+  Event.findOrCreate({
+    where: {
+      name: event_name,
+      sport: sport
     }
+  }).then(event => {
+    Olympian.findOrCreate({
+      where: {
+        name: name,
+        team: team,
+        age: age,
+        sport: sport
+      }
+    }).then(olympian => {
+      var olympian_id = olympian[0].id
+      var event_id = event[0].id
+      Medalist.findOrCreate({
+        where: {
+          OlympianId: olympian_id,
+          EventId: event_id,
+          medal: medal
+        }
+      })
+    })
   });
   counter ++;
   csvStream.resume();
 })
 .on('end',function(end) {
-  console.log('Finised Importing')
+  console.log('Finised Importing');
 })
 .on('err',function(err) {
-  console.log(err);
+  return console.log(err);
 })
+
+setTimeout(function() {
+  process.exit();
+}, 30000);
