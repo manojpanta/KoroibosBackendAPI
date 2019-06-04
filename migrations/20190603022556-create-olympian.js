@@ -20,7 +20,15 @@ module.exports = {
         allowNull: true,
         type: Sequelize.INTEGER
       },
+      weight: {
+        allowNull: true,
+        type: Sequelize.INTEGER
+      },
       sport: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
+      sex: {
         allowNull: true,
         type: Sequelize.STRING
       },
