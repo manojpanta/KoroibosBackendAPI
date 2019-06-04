@@ -19,6 +19,15 @@ module.exports = {
       medal: {
         type: Sequelize.STRING
       },
+      name: {
+        type: Sequelize.STRING
+      },
+      team: {
+        type: Sequelize.STRING
+      },
+      age: {
+        type: Sequelize.INTEGER
+      },
       EventId: {
         type: Sequelize.INTEGER,
         references: {

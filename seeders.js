@@ -14,7 +14,11 @@ let csvStream = csv.fromPath("./public/files/olympions.csv", {headers: true})
   let sex = record.Sex;
   let age = record.Age;
   let height = record.Height;
-  let weight = record.Weight;
+  if (record.Weight == 'NA'){
+    var weight = null
+  } else {
+    var weight = record.Weight;
+  }
   let team = record.Team;
   let games = record.Games;
   let sport = record.Sport;
@@ -33,7 +37,9 @@ let csvStream = csv.fromPath("./public/files/olympions.csv", {headers: true})
         name: name,
         team: team,
         age: age,
-        sport: sport
+        sport: sport,
+        weight: weight,
+        sex: sex
       }
     }).then(olympian => {
       var olympian_id = olympian[0].id
@@ -42,7 +48,10 @@ let csvStream = csv.fromPath("./public/files/olympions.csv", {headers: true})
         where: {
           OlympianId: olympian_id,
           EventId: event_id,
-          medal: medal
+          medal: medal,
+          name: name,
+          team: team,
+          age: age
         }
       })
     })
